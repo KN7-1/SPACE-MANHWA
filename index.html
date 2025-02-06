@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>فضاء المانهوا | Space Manhwa</title>
+  <!-- Import Goldman and Audiowide Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Goldman&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to right, #6a0dad, #4b0082); /* Purple gradient background */
+      color: white;
+      font-family: 'Goldman', sans-serif; /* Apply Goldman font to body */
+      margin: 0;
+      font-size: 1.2rem; /* Increase base font size */
+    }
+    header {
+      background-color: #2d2d2d; /* Dark background for header */
+      padding: 20px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-title {
+      font-family: 'Audiowide', sans-serif; /* Apply Audiowide font */
+      font-size: 2.5rem; /* Larger font for the site title */
+      font-weight: bold;
+      color: white; /* Initial color */
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+    .site-title:hover {
+      transform: scale(1.1); /* Grow effect on hover */
+      color: transparent; /* Make text transparent to reveal gradient */
+      background: linear-gradient(90deg, #9b4dca, #ff64e0); /* Gradient from purple to shiny pink */
+      -webkit-background-clip: text; /* Clip the background to the text */
+    }
+    .site-title:active {
+      transform: scale(0.95); /* Slight shrink effect on click */
+    }
+
+    /* Menu Section */
+    .menu {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 50px;
+    }
+    .menu a {
+      text-decoration: none;
+      color: white;
+      font-size: 1.2rem;
+      padding: 10px;
+      transition: color 0.3s ease;
+    }
+    .menu a:hover {
+      color: #ff64e0; /* Shiny pink hover effect */
+    }
+
+    /* Manhwa Section */
+    .manhwa-section {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      padding: 20px;
+    }
+    .manhwa-item {
+      text-align: center;
+      margin: 20px;
+    }
+    .manhwa-item img {
+      max-width: 200px;
+      border-radius: 10px;
+      transition: transform 0.3s ease;
+    }
+    .manhwa-item img:hover {
+      transform: scale(1.05); /* Slightly increase size on hover */
+    }
+    .manhwa-title {
+      margin-top: 10px;
+      font-family: 'Audiowide', sans-serif;
+    }
+
+    /* Form Section */
+    .form-section {
+      padding: 20px;
+      text-align: center;
+    }
+    .form-section input, .form-section button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 1rem;
+    }
+
+    /* Optional Footer Section */
+    footer {
+      background-color: #2d2d2d;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header Section -->
+  <header>
+    <h1 class="site-title">SPACE MANHWA</h1>
+    <div class="header-actions">
+      <input type="text" class="search-bar" placeholder="Search..." />
+      <button class="search-button">🔍</button>
+      <button class="dark-mode-button">🌙</button>
+      <button class="menu-button">☰</button>
+      <button class="login-button" onclick="document.querySelector('.login-modal').style.display = 'flex';">Login</button>
+    </div>
+  </header>
+
+  <!-- Menu Section -->
+  <div class="menu">
+    <a href="#">Home</a>
+    <a href="#">Latest</a>
+    <a href="#">Genres</a>
+    <a href="#">Top Rated</a>
+  </div>
+
+  <!-- Manhwa Section -->
+  <div class="manhwa-section" id="manhwaSection">
+    <div class="manhwa-item">
+      <img src="path/to/your/image1.jpg" alt="Manhwa 1">
+      <div class="manhwa-title">Manhwa Title 1</div>
+    </div>
+    <div class="manhwa-item">
+      <img src="path/to/your/image2.jpg" alt="Manhwa 2">
+      <div class="manhwa-title">Manhwa Title 2</div>
+    </div>
+    <!-- Add more Manhwa items as needed -->
+  </div>
+
+  <!-- Form Section -->
+  <div class="form-section">
+    <input type="text" id="adminUsername" placeholder="Admin Username">
+    <input type="password" id="adminPassword" placeholder="Admin Password">
+    <input type="text" id="manhwaTitle" placeholder="Enter Manhwa Title" disabled>
+    <input type="text" id="manhwaImage" placeholder="Enter Image URL" disabled>
+    <button onclick="adminLogin()">Login as Admin</button>
+    <button onclick="addManhwa()" disabled id="addManhwaButton">Add Manhwa</button>
+  </div>
+
+  <!-- Footer Section -->
+  <footer>
+    <p>© 2025 KN7 - All Rights Reserved</p>
+  </footer>
+
+  <script>
+    const adminUsername = 'admin';
+    const adminPassword = 'password';
+
+    function adminLogin() {
+      const username = document.getElementById('adminUsername').value;
+      const password = document.getElementById('adminPassword').value;
+
+      if (username === adminUsername && password === adminPassword) {
+        document.getElementById('manhwaTitle').disabled = false;
+        document.getElementById('manhwaImage').disabled = false;
+        document.getElementById('addManhwaButton').disabled = false;
+        alert('Admin login successful');
+      } else {
+        alert('Invalid admin credentials');
+      }
+    }
+
+    function addManhwa() {
+      const title = document.getElementById('manhwaTitle').value;
+      const imageUrl = document.getElementById('manhwaImage').value;
+
+      if (title && imageUrl) {
+        const manhwaSection = document.getElementById('manhwaSection');
+
+        const manhwaItem = document.createElement('div');
+        manhwaItem.className = 'manhwa-item';
+
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.alt = title;
+
+        const manhwaTitle = document.createElement('div');
+        manhwaTitle.className = 'manhwa-title';
+        manhwaTitle.textContent = title;
+
+        manhwaItem.appendChild(img);
+        manhwaItem.appendChild(manhwaTitle);
+
+        manhwaSection.appendChild(manhwaItem);
+
+        // Clear input fields
+        document.getElementById('manhwaTitle').value = '';
+        document.getElementById('manhwaImage').value = '';
+      } else {
+        alert('Please enter both title and image URL');
+      }
+    }
+  </script>
+</body>
+</html>
