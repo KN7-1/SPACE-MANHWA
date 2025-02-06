@@ -7,6 +7,9 @@
   <!-- Import Goldman and Audiowide Font -->
   <link href="https://fonts.googleapis.com/css2?family=Goldman&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
   <style>
     body {
       background: linear-gradient(to right, #6a0dad, #4b0082); /* Purple gradient background */
@@ -81,15 +84,31 @@
       font-family: 'Audiowide', sans-serif;
     }
 
-    /* Form Section */
-    .form-section {
+    /* Comment Section */
+    .comment-section {
       padding: 20px;
-      text-align: center;
+      margin-top: 20px;
+      background-color: #2d2d2d;
+      border-radius: 10px;
     }
-    .form-section input, .form-section button {
+    .comment-section textarea {
+      width: 100%;
       padding: 10px;
-      margin: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: none;
       font-size: 1rem;
+      font-family: 'Goldman', sans-serif;
+    }
+    .comment-section button {
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 1rem;
+      font-family: 'Goldman', sans-serif;
+      border: none;
+      background-color: #ff64e0;
+      color: white;
+      cursor: pointer;
     }
 
     /* Optional Footer Section */
@@ -111,7 +130,7 @@
       <button class="search-button">🔍</button>
       <button class="dark-mode-button">🌙</button>
       <button class="menu-button">☰</button>
-      <button class="login-button" onclick="document.querySelector('.login-modal').style.display = 'flex';">Login</button>
+      <button class="login-button" onclick="googleLogin()">Login with Google</button>
     </div>
   </header>
 
@@ -136,14 +155,10 @@
     <!-- Add more Manhwa items as needed -->
   </div>
 
-  <!-- Form Section -->
-  <div class="form-section">
-    <input type="text" id="adminUsername" placeholder="Admin Username">
-    <input type="password" id="adminPassword" placeholder="Admin Password">
-    <input type="text" id="manhwaTitle" placeholder="Enter Manhwa Title" disabled>
-    <input type="text" id="manhwaImage" placeholder="Enter Image URL" disabled>
-    <button onclick="adminLogin()">Login as Admin</button>
-    <button onclick="addManhwa()" disabled id="addManhwaButton">Add Manhwa</button>
+  <!-- Comment Section -->
+  <div class="comment-section" id="commentSection">
+    <textarea id="commentText" placeholder="Leave a comment..."></textarea>
+    <button onclick="submitComment()">Submit Comment</button>
   </div>
 
   <!-- Footer Section -->
@@ -151,52 +166,60 @@
     <p>© 2025 KN7 - All Rights Reserved</p>
   </footer>
 
-  <script>
-    const adminUsername = 'admin';
-    const adminPassword = 'password';
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "firebase/app";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-    function adminLogin() {
-      const username = document.getElementById('adminUsername').value;
-      const password = document.getElementById('adminPassword').value;
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDFtF1tc-p5Vqw1GVbynxSSomU4YueSEOE",
+      authDomain: "space-manhwa.firebaseapp.com",
+      projectId: "space-manhwa",
+      storageBucket: "space-manhwa.firebasestorage.app",
+      messagingSenderId: "213478539415",
+      appId: "1:213478539415:web:06e6b15dcbadf4b2b9e9d2",
+      measurementId: "G-XJS7YCPCQ5"
+    };
 
-      if (username === adminUsername && password === adminPassword) {
-        document.getElementById('manhwaTitle').disabled = false;
-        document.getElementById('manhwaImage').disabled = false;
-        document.getElementById('addManhwaButton').disabled = false;
-        alert('Admin login successful');
-      } else {
-        alert('Invalid admin credentials');
-      }
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    function googleLogin() {
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          const user = result.user;
+          console.log(user);
+          alert('Login successful');
+          // Enable comment section
+          document.getElementById('commentText').disabled = false;
+          document.getElementById('commentSection').style.display = 'block';
+        })
+        .catch((error) => {
+          console.log(error);
+          alert('Login failed');
+        });
     }
 
-    function addManhwa() {
-      const title = document.getElementById('manhwaTitle').value;
-      const imageUrl = document.getElementById('manhwaImage').value;
-
-      if (title && imageUrl) {
-        const manhwaSection = document.getElementById('manhwaSection');
-
-        const manhwaItem = document.createElement('div');
-        manhwaItem.className = 'manhwa-item';
-
-        const img = document.createElement('img');
-        img.src = imageUrl;
-        img.alt = title;
-
-        const manhwaTitle = document.createElement('div');
-        manhwaTitle.className = 'manhwa-title';
-        manhwaTitle.textContent = title;
-
-        manhwaItem.appendChild(img);
-        manhwaItem.appendChild(manhwaTitle);
-
-        manhwaSection.appendChild(manhwaItem);
-
-        // Clear input fields
-        document.getElementById('manhwaTitle').value = '';
-        document.getElementById('manhwaImage').value = '';
+    async function submitComment() {
+      const commentText = document.getElementById('commentText').value;
+      if (commentText) {
+        try {
+          const docRef = await addDoc(collection(db, "comments"), {
+            text: commentText,
+            timestamp: serverTimestamp()
+          });
+          alert("Comment added: " + docRef.id);
+          document.getElementById('commentText').value = '';
+        } catch (error) {
+          console.error("Error adding comment: ", error);
+        }
       } else {
-        alert('Please enter both title and image URL');
+        alert('Please enter a comment');
       }
     }
   </script>
